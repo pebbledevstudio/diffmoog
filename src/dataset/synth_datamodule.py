@@ -29,11 +29,12 @@ class ModularSynthDataModule(pl.LightningDataModule):
             self.train_dataset = AiSynthDataset(train_dir, noise_std=self.added_noise_std)
 
             nsynth_train_dir = os.path.join(self.data_dir, 'train_nsynth')
+            nsynth_global_train_dir = os.path.join(self.data_dir, '..', 'train_nsynth')
             if os.path.isdir(nsynth_train_dir):
                 self.ood_train_dataset = NSynthDataset(nsynth_train_dir)
-            elif os.path.isdir(os.path.join(self.data_dir, '..', 'train_nsynth')):
+            elif os.path.isdir(nsynth_global_train_dir):
                 print(f'No OOD train data found in {self.data_dir}. Using OOD train data from parent directory.')
-                self.ood_train_dataset = NSynthDataset(nsynth_train_dir)
+                self.ood_train_dataset = NSynthDataset(nsynth_global_train_dir)
             else:
                 print("No OOD train data found. Running in-domain training only...")
 
@@ -43,10 +44,11 @@ class ModularSynthDataModule(pl.LightningDataModule):
             self.in_domain_val_dataset = AiSynthDataset(val_dir)
 
             nsynth_val_dir = os.path.join(self.data_dir, 'val_nsynth')
+            nsynth_global_val_dir = os.path.join(self.data_dir, '..', 'val_nsynth')
             if os.path.isdir(nsynth_val_dir):
                 self.out_of_domain_val_dataset = NSynthDataset(nsynth_val_dir)
-            elif os.path.isdir(os.path.join(self.data_dir, '..', 'val_nsynth')):
-                self.out_of_domain_val_dataset = NSynthDataset(nsynth_val_dir)
+            elif os.path.isdir(nsynth_global_val_dir):
+                self.out_of_domain_val_dataset = NSynthDataset(nsynth_global_val_dir)
                 print(f'No OOD val data found in {self.data_dir}. Using OOD val data from parent directory.')
             else:
                 print("No OOD val data found. Running in-domain validation only...")
