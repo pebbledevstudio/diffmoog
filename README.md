@@ -14,7 +14,7 @@ To get started, simply clone the repo and install the requirements in requiremen
 
 ### Dataset generation
 
-To create a dataset, run the file `src/dataset/create_data.py` with the following arguments:
+To create a dataset, run the file `src/create_data.py` with the following arguments:
 
 - `-g`: the index of the GPU to use
 - `-s`: the dataset to create, either `'train'` or `'val'`
@@ -99,6 +99,10 @@ To train the model, execute the `src/main.py` script with the following argument
 ```sh
 -g 0 -e params_only -d modular_chain_dataset -c root/configs/paper_configs_reduced/params_only_config.yaml
 ```
+
+#### Evaluation
+
+To evaluate the model, execute the `src/evaluate_model.py` script. Please check the file and set the appropriate parameters.
 
 ### Paper
 

@@ -13,15 +13,17 @@ from pathlib import Path
 
 root = get_project_root()
 
-# set these variables before evaluation
+### set these variables before evaluation
 experiment_name = ''
 experiment_version = 0
 ckpt_name = ''
 ckpt_path = os.path.join(root, 'my_checkpoints', f'exp_{experiment_name}_version_{experiment_version}', ckpt_name)
-cfg_path = os.path.join(root, 'configs', 'example_copy.yaml')
-dataset_path = os.path.join(root, 'data', 'test_nsynth')
+cfg_path = os.path.join(root, 'configs', '')
+dataset_path = os.path.join(root, 'data', '')
+using_nsynth_dataset = False # A different step function is used when evaluating using the nsynth_dataset
 output_path = os.path.join(root, 'output')
 device = 'cpu'
+###
 
 if not os.path.exists(output_path):
     os.makedirs(output_path)
@@ -36,7 +38,10 @@ all_losses, all_metrics, all_step_artifacts = [], [], []
 for batch in tqdm(dataloader):
     batch[0] = batch[0].to(device)
     with torch.no_grad(), capture_output():
-        loss, step_losses, step_metrics, step_artifacts = synth_module.out_of_domain_step(batch, return_metrics=True)
+        if using_nsynth_dataset:
+            loss, step_losses, step_metrics, step_artifacts = synth_module.out_of_domain_step(batch, return_metrics=True)
+        else
+            loss, step_losses, step_metrics, step_artifacts = synth_module.in_domain_step(batch, return_metrics=True)
     all_losses.append(step_losses)
     all_metrics.append(step_metrics)
     all_step_artifacts.append(step_artifacts)
