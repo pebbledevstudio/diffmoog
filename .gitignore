@@ -8,6 +8,7 @@ __pycache__/
 
 # Checkpoints and Experiments and data
 src/my_checkpoints/*
+!src/my_checkpoints/.gitignore
 experiments/
 data/
 
