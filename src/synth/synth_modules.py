@@ -123,7 +123,10 @@ class SynthModule(ABC):
         standartized_active_vector = self._standardize_input(active_vector, requested_dtype=torch.float32, requested_dims=2,
                                                 batch_size=batch_size)
         active_vector_gumble = gumbel_softmax(standartized_active_vector, hard=True, device=self.device)
-        ret_active_vector = active_vector_gumble[:, 1:]
+        if active_vector_gumble.shape[1] > 1:
+            ret_active_vector = active_vector_gumble[:, 1:]
+        else:
+            ret_active_vector = active_vector_gumble
 
         return ret_active_vector
 
@@ -172,8 +175,7 @@ class Oscillator(SynthModule):
         if active_signal is not None:
             active_signal = self._standardize_input(active_signal, requested_dtype=torch.float32, requested_dims=2,
                                                 batch_size=batch_size)
-        if active_signal.shape != torch.Size([1, 1]):  # hacky fix, not good
-            active_signal = self._process_active_signal(active_signal, batch_size)
+        active_signal = self._process_active_signal(active_signal, batch_size)
 
         if 'amp' not in params:
             self._amp_warning()
