@@ -6,6 +6,11 @@ __pycache__/
 # C extensions
 *.so
 
+# Checkpoints and Experiments and data
+src/my_checkpoints/
+experiments/
+data/
+
 # Distribution / packaging
 .Python
 build/
