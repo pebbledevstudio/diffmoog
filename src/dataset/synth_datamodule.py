@@ -31,6 +31,9 @@ class ModularSynthDataModule(pl.LightningDataModule):
             nsynth_train_dir = os.path.join(self.data_dir, 'train_nsynth')
             if os.path.isdir(nsynth_train_dir):
                 self.ood_train_dataset = NSynthDataset(nsynth_train_dir)
+            elif os.path.isdir(os.path.join(self.data_dir, '..', 'train_nsynth')):
+                print(f'No OOD train data found in {self.data_dir}. Using OOD train data from parent directory.')
+                self.ood_train_dataset = NSynthDataset(nsynth_train_dir)
             else:
                 print("No OOD train data found. Running in-domain training only...")
 
@@ -40,7 +43,13 @@ class ModularSynthDataModule(pl.LightningDataModule):
             self.in_domain_val_dataset = AiSynthDataset(val_dir)
 
             nsynth_val_dir = os.path.join(self.data_dir, 'val_nsynth')
-            self.out_of_domain_val_dataset = NSynthDataset(nsynth_val_dir)
+            if os.path.isdir(nsynth_val_dir):
+                self.out_of_domain_val_dataset = NSynthDataset(nsynth_val_dir)
+            elif os.path.isdir(os.path.join(self.data_dir, '..', 'val_nsynth')):
+                self.out_of_domain_val_dataset = NSynthDataset(nsynth_val_dir)
+                print(f'No OOD val data found in {self.data_dir}. Using OOD val data from parent directory.')
+            else:
+                print("No OOD val data found. Running in-domain validation only...")
 
     def train_dataloader(self):
         if 0 < self.switch_to_ood_after_n_epochs < self.trainer.current_epoch + 1:

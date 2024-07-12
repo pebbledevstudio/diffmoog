@@ -68,10 +68,9 @@ def run(run_args):
     tb_logger = TensorBoardLogger(cfg.logs_dir, name=exp_name)
     lit_module.tb_logger = tb_logger.experiment
 
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    CHECKPOINT_DIR = os.path.join(BASE_DIR, 'my_checkpoints')
+    CHECKPOINT_DIR = os.path.join(root, 'my_checkpoints')
 
-    next_version = get_next_version(CHECKPOINT_DIR)
+    next_version = get_next_version(CHECKPOINT_DIR, exp_name)
     checkpoint_callback = ModelCheckpoint(
         dirpath=f'./my_checkpoints/exp_{exp_name}_version_{next_version}',  # Use next version for versioning
         filename='{epoch}-{train_loss:.2f}',  # the filename includes epoch number and validation loss
@@ -95,7 +94,7 @@ def run(run_args):
     trainer = Trainer(logger=tb_logger,
                       callbacks=callbacks,
                       max_epochs=cfg.model.num_epochs,
-                      accelerator="gpu",
+                      accelerator="auto",
                       detect_anomaly=True,
                       log_every_n_steps=log_every_n_steps,
                       check_val_every_n_epoch=1,
@@ -150,15 +149,14 @@ def configure_experiment(exp_name: str, dataset_name: str, config_name: str, deb
     return cfg
 
 
-def get_next_version(base_dir):
-    existing_versions = [d for d in os.listdir(base_dir) if
-                         os.path.isdir(os.path.join(base_dir, d)) and "version_" in d]
-    existing_versions.sort(key=lambda x: int(x.split("_")[1]))
+def get_next_version(base_dir, exp_name):
+    existing_versions = [d for d in os.listdir(base_dir) if exp_name in d]
+    existing_versions.sort(key=lambda x: int(x[-1]))
 
     if not existing_versions:
         return 0
     else:
-        last_version = int(existing_versions[-1].split("_")[1])
+        last_version = int(existing_versions[-1][-1])
         return last_version + 1
 
 

@@ -1,7 +1,5 @@
 import os, sys
 
-sys.path.append("..")
-
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 import pandas as pd

@@ -7,7 +7,7 @@ BASIC_FLOW_LFO_DECOUPLING = [
     {'index': (0, 0), 'operation': 'lfo_sine', 'default_connection': True},
     {'index': (0, 1), 'operation': 'fm', 'default_connection': True},
     {'index': (1, 0), 'operation': 'lfo_non_sine', 'default_connection': True},
-    {'index': (1, 1), 'operation': 'fm', 'audio_input': [[1, 0]], 'output': [0, 2]},
+    {'index': (1, 1), 'operation': 'fm', 'audio_input': [[1, 0]], 'outputs': [0, 2]},
     {'index': (1, 2), 'operation': None, 'audio_input': None},
     {'index': (2, 2), 'operation': None, 'audio_input': None},
     {'index': (0, 2), 'operation': 'mix', 'audio_input': [[0, 1], [1, 1]]},
@@ -19,9 +19,9 @@ BASIC_FLOW = [
     {'index': (0, 0), 'operation': 'lfo', 'default_connection': True},
     {'index': (0, 1), 'operation': 'fm_sine', 'default_connection': True},
     {'index': (1, 0), 'operation': 'lfo', 'default_connection': True},
-    {'index': (1, 1), 'operation': 'fm_square', 'audio_input': [[1, 0]], 'output': [0, 2]},
+    {'index': (1, 1), 'operation': 'fm_square', 'audio_input': [[1, 0]], 'outputs': [0, 2]},
     {'index': (2, 0), 'operation': 'lfo', 'default_connection': True},
-    {'index': (2, 1), 'operation': 'fm_saw', 'audio_input': [[2, 0]], 'output': [0, 2]},
+    {'index': (2, 1), 'operation': 'fm_saw', 'audio_input': [[2, 0]], 'outputs': [0, 2]},
     {'index': (1, 2), 'operation': None, 'audio_input': None},
     {'index': (2, 2), 'operation': None, 'audio_input': None},
     {'index': (0, 2), 'operation': 'mix', 'audio_input': [[0, 1], [1, 1], [2, 1]]},
@@ -144,7 +144,7 @@ BASIC_FLOW_NO_ADSR = [
     {'index': (0, 0), 'operation': 'lfo_sine', 'default_connection': True},
     {'index': (0, 1), 'operation': 'fm', 'default_connection': True},
     {'index': (1, 0), 'operation': 'lfo_non_sine', 'default_connection': True},
-    {'index': (1, 1), 'operation': 'fm', 'audio_input': [[1, 0]], 'output': [0, 2]},
+    {'index': (1, 1), 'operation': 'fm', 'audio_input': [[1, 0]], 'outputs': [0, 2]},
     {'index': (1, 2), 'operation': None, 'audio_input': None},
     {'index': (0, 2), 'operation': 'mix', 'audio_input': [[0, 1], [1, 1]]},
     {'index': (0, 3), 'operation': 'filter', 'default_connection': True},
@@ -154,7 +154,7 @@ BASIC_FLOW_NO_FILTER = [
     {'index': (0, 0), 'operation': 'lfo_sine', 'default_connection': True},
     {'index': (0, 1), 'operation': 'fm', 'default_connection': True},
     {'index': (1, 0), 'operation': 'lfo_non_sine', 'default_connection': True},
-    {'index': (1, 1), 'operation': 'fm', 'audio_input': [[1, 0]], 'output': [0, 2]},
+    {'index': (1, 1), 'operation': 'fm', 'audio_input': [[1, 0]], 'outputs': [0, 2]},
     {'index': (1, 2), 'operation': None, 'audio_input': None},
     {'index': (0, 2), 'operation': 'mix', 'audio_input': [[0, 1], [1, 1]]},
     {'index': (0, 3), 'operation': 'amplitude_shape', 'default_connection': True},
@@ -164,7 +164,7 @@ BASIC_FLOW_NO_ADSR_NO_FILTER = [
     {'index': (0, 0), 'operation': 'lfo_sine', 'default_connection': True},
     {'index': (0, 1), 'operation': 'fm', 'default_connection': True},
     {'index': (1, 0), 'operation': 'lfo_non_sine', 'default_connection': True},
-    {'index': (1, 1), 'operation': 'fm', 'audio_input': [[1, 0]], 'output': [0, 2]},
+    {'index': (1, 1), 'operation': 'fm', 'audio_input': [[1, 0]], 'outputs': [0, 2]},
     {'index': (1, 2), 'operation': None, 'audio_input': None},
     {'index': (0, 2), 'operation': 'mix', 'audio_input': [[0, 1], [1, 1]]},
 ]
@@ -247,7 +247,7 @@ NON_SINE_LFO = [
 
 DOUBLE_FM_ONLY = [
     {'index': (0, 1), 'operation': 'fm', 'default_connection': True},
-    {'index': (1, 1), 'operation': 'fm', 'audio_input': [], 'output': [0, 2]},
+    {'index': (1, 1), 'operation': 'fm', 'audio_input': [], 'outputs': [0, 2]},
     {'index': (1, 2), 'operation': None, 'audio_input': None},
     {'index': (0, 2), 'operation': 'mix', 'audio_input': [[0, 1], [1, 1]]},
 ]
@@ -289,8 +289,8 @@ FM_FILTER_ADSR = [
 
 DOUBLE_LFO = [
     {'index': (0, 0), 'operation': 'lfo_sine', 'default_connection': True},
-    {'index': (1, 0), 'operation': 'lfo_non_sine', 'output': [0, 1]},
-    {'index': (0, 1), 'operation': 'mix', 'audio_input': [[0, 0], [1, 0]], 'output': [0, 2]},
+    {'index': (1, 0), 'operation': 'lfo_non_sine', 'outputs': [0, 1]},
+    {'index': (0, 1), 'operation': 'mix', 'audio_input': [[0, 0], [1, 0]], 'outputs': [0, 2]},
     {'index': (1, 1), 'operation': None, 'audio_input': None}
 ]
 

@@ -171,8 +171,9 @@ class Oscillator(SynthModule):
         active_signal = params.get('active', None)
         if active_signal is not None:
             active_signal = self._standardize_input(active_signal, requested_dtype=torch.float32, requested_dims=2,
-                                                    batch_size=batch_size)
-        active_signal = self._process_active_signal(active_signal, batch_size)
+                                                batch_size=batch_size)
+        if active_signal.shape != torch.Size([1, 1]):  # hacky fix, not good
+            active_signal = self._process_active_signal(active_signal, batch_size)
 
         if 'amp' not in params:
             self._amp_warning()

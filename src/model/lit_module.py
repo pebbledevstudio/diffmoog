@@ -196,7 +196,9 @@ class LitModularSynth(LightningModule):
             'raw_predicted_parameters': predicted_params_unit_range,
             'full_range_predicted_parameters': predicted_params_full_range,
             'param_diffs': param_diffs,
-            'active_only_diffs': active_only_diffs
+            'active_only_diffs': active_only_diffs,
+            'target_final_signal': target_signal,
+            'pred_final_signal': pred_final_signal,
         }
 
         if return_metrics:
@@ -231,7 +233,11 @@ class LitModularSynth(LightningModule):
 
         step_artifacts = {'raw_predicted_parameters': predicted_params_unit_range,
                           'full_range_predicted_parameters': predicted_params_full_range,
-                          'per_op_spec_loss_raw': per_op_loss, 'per_op_spec_loss_weighted': per_op_weighted_loss}
+                          'per_op_spec_loss_raw': per_op_loss,
+                          'per_op_spec_loss_weighted': per_op_weighted_loss,
+                          'pred_final_signal': pred_final_signal,
+                          'target_final_signal': target_final_signal,
+                          }
 
         if return_metrics:
             step_metrics = self._calculate_audio_metrics(target_final_signal, pred_final_signal)
