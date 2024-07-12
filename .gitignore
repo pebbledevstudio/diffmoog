@@ -7,7 +7,7 @@ __pycache__/
 *.so
 
 # Checkpoints and Experiments and data
-src/my_checkpoints/
+src/my_checkpoints/*
 experiments/
 data/
 
