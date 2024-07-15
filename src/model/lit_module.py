@@ -53,8 +53,8 @@ class LitModularSynth(LightningModule):
 
         if train_cfg.synth.transform.lower() == 'mel':
             self.signal_transform = torchaudio.transforms.MelSpectrogram(sample_rate=synth_constants.sample_rate,
-                                                                         n_fft=1024, hop_length=256, n_mels=128,
-                                                                         power=1.0, center=True).to(device)
+                                                                         n_fft=400, hop_length=160, n_mels=80,
+                                                                         power=1.0, center=True, normalized=True).to(device)
         elif train_cfg.synth.transform.lower() == 'spec':
             self.signal_transform = torchaudio.transforms.Spectrogram(n_fft=512, power=2.0).to(device)
         else:
@@ -91,6 +91,10 @@ class LitModularSynth(LightningModule):
         self.val_epoch_param_diffs = defaultdict(list)
         self.val_epoch_param_active_diffs = defaultdict(list)
         self.tb_logger = None
+        
+        self.log_mel_max = train_cfg.synth.get('log_mel_max', 1)
+        self.log_mel_min = train_cfg.synth.get('log_mel_min', 0)
+        print(f"Initialized LitModule with log_mel_max: {self.log_mel_max}, log_mel_min: {self.log_mel_min}")
 
     def forward(self, raw_signal: torch.Tensor, *args, **kwargs) -> Any:
 
@@ -350,11 +354,12 @@ class LitModularSynth(LightningModule):
         if self.use_multi_spec_input:
             spectrograms = self.multi_spec_transform.call(raw_signal)
         else:
-            spectrograms = self.signal_transform(raw_signal)
+            spectrograms = self.signal_transform(raw_signal).abs()
 
         # Apply log transform if required
         if self.apply_log_transform_to_input:
-            spectrograms = torch.log(spectrograms + 1e-8)
+            spectrograms = torch.log(spectrograms + 1e-9)
+            spectrograms = (spectrograms - self.log_mel_min) / (self.log_mel_max - self.log_mel_min) * 2 - 1
 
         return spectrograms
 
@@ -566,8 +571,8 @@ class LitModularSynth(LightningModule):
         target_signal = target_signal.float()
         predicted_signal = predicted_signal.float()
 
-        target_spec = self.signal_transform(target_signal)
-        predicted_spec = self.signal_transform(predicted_signal)
+        target_spec = self.signal_transform(target_signal).abs()
+        predicted_spec = self.signal_transform(predicted_signal).abs()
 
         metrics['paper_lsd_value'] = paper_lsd(target_signal, predicted_signal)
         metrics['lsd_value'] = lsd(target_spec, predicted_spec, reduction=torch.mean)

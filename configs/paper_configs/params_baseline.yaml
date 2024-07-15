@@ -3,8 +3,8 @@ model:
   backbone: gru
   chain: MODULAR
   num_workers: 8
-  batch_size: 64
-  num_epochs: 200
+  batch_size: 256
+  num_epochs: 20000
 
   optimizer:
     base_lr: 0.005
@@ -17,13 +17,14 @@ loss:
   control_spec_preset: cumsum_time
   parameters_loss_norm: L1
 
+  apply_loss_normalization: false
   parameters_loss_weight: 0.1
   spectrogram_loss_weight: 0
 
   spectrogram_loss_warmup_epochs: 3333333333333333
   loss_switch_epochs: 0
   min_parameters_loss_decay: 0
-  in_domain_epochs: 200
+  in_domain_epochs: 20000
 
   use_chain_loss: false
   chain_loss_weight: 1.0
@@ -33,10 +34,13 @@ loss:
 synth:
   chain: MODULAR
   transform: MEL
+  apply_log_transform_to_input: false
   use_multi_spec_input: false
   signal_duration: 4
   note_off_time: 3.0
   added_noise_std: 0.001
+  log_mel_max: 4.5944
+  log_mel_min: -20.7233
 
 logging:
   n_images_to_log: 5

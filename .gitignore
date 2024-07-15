@@ -7,10 +7,11 @@ __pycache__/
 *.so
 
 # Checkpoints and Experiments and data
-src/my_checkpoints/*
-!src/my_checkpoints/.gitignore
+my_checkpoints/*
+my_checkpoints/.gitignore
 experiments/
 data/
+wandb/
 
 # Distribution / packaging
 .Python

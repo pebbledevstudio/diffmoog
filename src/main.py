@@ -19,6 +19,10 @@ from utils.gpu_utils import get_device
 from model.lit_module import LitModularSynth
 from utils.train_utils import get_project_root
 
+import wandb
+from pytorch_lightning.loggers import WandbLogger
+
+
 
 class FineTuneLearningRateFinder(LearningRateFinder):
     def __init__(self, milestones, *args, **kwargs):
@@ -64,6 +68,10 @@ def run(run_args):
                                                           device=device)
     else:
         lit_module = LitModularSynth(cfg, device)
+        
+    # lit_module = torch.compile(lit_module)
+    wandb_logger = WandbLogger(project="SynthGPT", name=exp_name)
+
 
     tb_logger = TensorBoardLogger(cfg.logs_dir, name=exp_name)
     lit_module.tb_logger = tb_logger.experiment
@@ -92,15 +100,16 @@ def run(run_args):
 
     seed_everything(3125, workers=True)
 
-    trainer = Trainer(logger=tb_logger,
+    trainer = Trainer(logger=[tb_logger, wandb_logger],
                       callbacks=callbacks,
                       max_epochs=cfg.model.num_epochs,
                       accelerator="gpu",
-                      detect_anomaly=True,
+                      detect_anomaly=False,
                       log_every_n_steps=log_every_n_steps,
                       check_val_every_n_epoch=1,
-                      accumulate_grad_batches=4,
-                      reload_dataloaders_every_n_epochs=cfg.loss.in_domain_epochs)
+                      accumulate_grad_batches=1,
+                      precision="bf16")
+                    #   reload_dataloaders_every_n_epochs=cfg.loss.in_domain_epochs)
 
     if is_load_ckpt:
         trainer.fit(lit_module, datamodule=datamodule, ckpt_path=cfg.model.ckpt_path)

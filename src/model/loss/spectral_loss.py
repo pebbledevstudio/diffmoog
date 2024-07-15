@@ -95,7 +95,7 @@ class SpectralLoss(BaseSpectralLoss):
             self.spectrogram_ops[f'{fft_size}_spectrogram'] = spec_transform
 
         if self.loss_transform == 'BOTH' or self.loss_transform == 'MEL_SPECTROGRAM':
-            n_mels = self.loss_preset.get('n_mels', 256)
+            n_mels = self.loss_preset.get('n_mels', 80)
             f_min = self.loss_preset.get('f_min', 0.0)
             f_max = self.loss_preset.get('f_max', None)
             mel_spec_transform = torchaudio.transforms.MelSpectrogram(sample_rate=self.sample_rate,
@@ -104,7 +104,8 @@ class SpectralLoss(BaseSpectralLoss):
                                                                       n_mels=n_mels,
                                                                       f_min=f_min,
                                                                       f_max=f_max,
-                                                                      power=2.0).to(self.device)
+                                                                      power=2.0,
+                                                                      normalized=True).to(self.device)
             self.spectrogram_ops[f'{fft_size}_mel'] = mel_spec_transform
 
     def call(self, target_audio, predicted_audio, step: int, return_spectrogram: bool = False):
@@ -125,8 +126,8 @@ class SpectralLoss(BaseSpectralLoss):
 
             n_fft = loss_op.n_fft
 
-            target_mag = loss_op(target_audio.float())
-            value_mag = loss_op(predicted_audio.float())
+            target_mag = loss_op(target_audio).abs()
+            value_mag = loss_op(predicted_audio).abs()
 
             c_loss = torch.tensor(0.0, requires_grad=True).to(self.device)
             for loss_type, pre_loss_fn in loss_type_to_function.items():

@@ -5,6 +5,7 @@ This file contains the synth modules, which are the building blocks of the modul
 """
 from abc import ABC, abstractmethod
 from typing import Dict, Tuple, Union, Sequence
+import inspect
 
 import numpy as np
 
@@ -123,7 +124,8 @@ class SynthModule(ABC):
         standartized_active_vector = self._standardize_input(active_vector, requested_dtype=torch.float32, requested_dims=2,
                                                 batch_size=batch_size)
         active_vector_gumble = gumbel_softmax(standartized_active_vector, hard=True, device=self.device)
-        ret_active_vector = active_vector_gumble[:, 1:]
+        
+        ret_active_vector = active_vector_gumble[:, 1:] if active_vector_gumble.shape[1] > 1 else active_vector_gumble.to(torch.int64)
 
         return ret_active_vector
 
@@ -169,10 +171,22 @@ class Oscillator(SynthModule):
         self._verify_input_params(params)
 
         active_signal = params.get('active', None)
+        # print(active_signal)
         if active_signal is not None:
             active_signal = self._standardize_input(active_signal, requested_dtype=torch.float32, requested_dims=2,
                                                     batch_size=batch_size)
+        # print(active_signal)
         active_signal = self._process_active_signal(active_signal, batch_size)
+        # stack = inspect.stack()
+        # # Get the caller's frame information
+        # caller_frame = stack[1]
+        # # Extract the relevant information from the caller's frame
+        # caller_function_name = caller_frame.function
+        # caller_line_number = caller_frame.lineno
+        # caller_file_name = caller_frame.filename
+        
+        # print(f"my_method was called by {caller_function_name} in {caller_file_name} at line {caller_line_number}")
+        # print(active_signal, active_signal.shape, active_signal.dtype)
 
         if 'amp' not in params:
             self._amp_warning()
@@ -197,11 +211,12 @@ class Oscillator(SynthModule):
                                                    signal_duration=signal_duration)
 
         if self.waveform is not None:
+            # print('a')
             return wave_tensors[self.waveform]
 
         waves_tensor = torch.stack([wave_tensors['sine'], wave_tensors['square'], wave_tensors['saw']])
         oscillator_tensor = self._mix_waveforms(waves_tensor, params['waveform'], self.wave_type_indices)
-
+        # print('b')
         return oscillator_tensor
 
     def _generate_wave_tensors(self, t, amp, freq, phase_mod=0, sample_rate=16000, signal_duration=1.0):

@@ -218,6 +218,8 @@ def to_numpy_recursive(input_to_convert):
         return input_to_convert
 
     if isinstance(input_to_convert, torch.Tensor):
+        if input_to_convert.dtype == torch.bfloat16:
+            input_to_convert = input_to_convert.to(torch.float32)
         return input_to_convert.cpu().detach().numpy()
 
     if isinstance(input_to_convert, list):

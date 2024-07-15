@@ -344,7 +344,7 @@ class RNNBackbone(nn.Module):
     """
 
     def __init__(self, rnn_type: str = 'lstm', input_size: int = 128, hidden_size: int = 512, output_size: int = LATENT_SPACE_SIZE,
-                 agg_mean: bool = False, channels: int = 128, n_mels: int = 128):
+                 agg_mean: bool = False, channels: int = 128, n_mels: int = 80):
 
         super().__init__()
 
@@ -357,6 +357,12 @@ class RNNBackbone(nn.Module):
 
         if rnn_type.lower() == 'lstm':
             self.rnn = nn.LSTM(input_size, hidden_size, num_layers=4, batch_first=True, bias=False)
+            self.conv = nn.Sequential(
+                nn.Conv1d(n_mels, channels, kernel_size=3),
+                nn.GELU(),
+                nn.Conv1d(channels, channels, kernel_size=3, stride=2),
+                nn.GELU()
+            )
         elif rnn_type.lower() == 'gru':
             self.conv1 = nn.Conv1d(in_channels=1, out_channels=channels, kernel_size=7, stride=2, padding=3)
             self.bn1 = nn.BatchNorm1d(num_features=channels)
@@ -415,6 +421,8 @@ class RNNBackbone(nn.Module):
             x = x.view(batch_size, n_frames, -1)
 
         else:  # assuming the only other option is 'lstm'
+            x = x.squeeze(1)
+            x = self.conv(x)
             x = x.transpose(2, 1)
         if self.rnn_type == 'gru':
             output, hidden = self.rnn(x, torch.zeros(1, batch_size, self.hidden_size, device=x.device))
@@ -425,6 +433,7 @@ class RNNBackbone(nn.Module):
             hidden = hidden[0]
 
         rnn_pred = output[:, -1, :]
+        # rnn_pred = hidden[-1, :, :]  # output: [batch_size, self.hidden_size]
         # output: [batch_size, self.output_dim]
 
         fc_output = self.fc(rnn_pred)

@@ -144,7 +144,7 @@ BASIC_FLOW_NO_ADSR = [
     {'index': (0, 0), 'operation': 'lfo_sine', 'default_connection': True},
     {'index': (0, 1), 'operation': 'fm', 'default_connection': True},
     {'index': (1, 0), 'operation': 'lfo_non_sine', 'default_connection': True},
-    {'index': (1, 1), 'operation': 'fm', 'audio_input': [[1, 0]], 'output': [0, 2]},
+    {'index': (1, 1), 'operation': 'fm', 'audio_input': [[1, 0]], 'outputs': [[0, 2]]},
     {'index': (1, 2), 'operation': None, 'audio_input': None},
     {'index': (0, 2), 'operation': 'mix', 'audio_input': [[0, 1], [1, 1]]},
     {'index': (0, 3), 'operation': 'filter', 'default_connection': True},

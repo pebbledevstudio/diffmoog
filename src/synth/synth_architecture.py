@@ -8,6 +8,8 @@ from synth.synth_chains import synth_chains_dict
 
 from utils.types import TensorLike
 
+import inspect
+
 
 class SynthModularCell:
 
@@ -87,12 +89,21 @@ class SynthModularCell:
                         ValueError("Illegal parameter for the provided operation")
 
     def generate_signal(self, input_signal, modulator_signal, params, sample_rate, signal_duration, batch_size):
+        # stack = inspect.stack()
+        # # Get the caller's frame information
+        # caller_frame = stack[1]
+        # # Extract the relevant information from the caller's frame
+        # caller_function_name = caller_frame.function
+        # caller_line_number = caller_frame.lineno
+        # caller_file_name = caller_frame.filename
+        
+        # print(f"generate_signal was called by {caller_function_name} in {caller_file_name} at line {caller_line_number}")
         signal = self.module.process_sound(input_signal, modulator_signal, params, sample_rate, signal_duration,
                                            batch_size)
 
         if signal is not None and torch.any(torch.isnan(signal)):
             raise RuntimeError("Signal contains NaN")
-
+        # print('signal is none: ', signal is None)
         self.signal = signal
 
 
